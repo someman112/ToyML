@@ -1,0 +1,54 @@
+(* === Program === *)
+program        ::= (statement (NEWLINE statement)*)? NEWLINE* EOF
+
+(* === Statements === *)
+statement      ::= import_stmt
+                 | comment
+                 | dataset_stmt
+                 | command_stmt
+                 | pipeline_stmt
+                 | print_stmt
+
+(* === Comments and Imports === *)
+comment        ::= "#" ~[\n]*
+import_stmt    ::= "import" IDENT
+dataset_stmt   ::= "Dataset" IDENT "from" STRING
+
+
+(* === Unified Commands === *)
+command_stmt   ::= Load_cmd
+                 | Split_cmd
+                 | Train_cmd
+                 | Eval_cmd
+
+Load_cmd       ::= "Load" STRING ["as" IDENT]
+Split_cmd      ::= "Split" IDENT "into" IDENT_LIST ["with" param_list]
+Train_cmd      ::= "Train" IDENT ["with" param_list]
+Eval_cmd       ::= "Evaluate" IDENT "on" IDENT
+
+IDENT_LIST     ::= IDENT ("," IDENT)*
+
+(* === Pipelines with Indentation === *)
+pipeline_stmt  ::= "Pipeline" IDENT ":" NEWLINE
+                      INDENT statement+ DEDENT
+
+(* === Printing === *)
+print_stmt     ::= "Print" expr
+
+(* === Expressions & Calls === *)
+expr           ::= IDENT
+                 | literal
+                 | IDENT "(" arg_list? ")"
+
+arg_list       ::= arg ("," arg)*
+arg            ::= IDENT "=" expr
+                 | expr
+
+param_list     ::= param ("," param)*
+param          ::= IDENT "=" expr
+
+(* === Terminals === *)
+literal        ::= NUMBER | STRING | "true" | "false"
+IDENT          ::= letter (letter | digit | "_")*
+NUMBER         ::= digit+ ("." digit+)?
+STRING         ::= '"' (~["])* '"'
