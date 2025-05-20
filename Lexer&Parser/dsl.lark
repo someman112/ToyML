@@ -1,0 +1,79 @@
+// dsl.lark
+
+// ——————————————————————————————
+//  Terminals
+// ——————————————————————————————
+%import common.CNAME          -> IDENT
+%import common.ESCAPED_STRING -> STRING
+%import common.NUMBER
+%import common.WS_INLINE
+
+// Match one-or-more “\n” plus any spaces/tabs after it.
+_NL : /(\r?\n[ \t]*)+/
+
+%ignore WS_INLINE
+%declare _INDENT _DEDENT
+
+// ——————————————————————————————
+//  Top-level
+// ——————————————————————————————
+start: statement* _NL*
+
+// ——————————————————————————————
+//  Statements (each ends in exactly one _NL)
+// ——————————————————————————————
+?statement: import_stmt  _NL
+          | comment      _NL
+          | dataset_stmt _NL
+          | command_stmt _NL
+          | print_stmt   _NL
+          | pipeline_stmt
+
+// ——————————————————————————————
+//  Comments & Imports
+// ——————————————————————————————
+comment     : /#[^\n]*/
+import_stmt : "import" IDENT
+
+// ——————————————————————————————
+//  Datasets
+// ——————————————————————————————
+dataset_stmt: "Dataset" IDENT "from" STRING
+
+// ——————————————————————————————
+//  Unified Commands
+// ——————————————————————————————
+?command_stmt: load_cmd
+             | split_cmd
+             | train_cmd
+             | eval_cmd
+
+load_cmd   : "Load" STRING ("as" IDENT)?
+split_cmd  : "Split" IDENT "into" IDENT ("," IDENT)* ("with" param_list)?
+train_cmd  : "Train" IDENT ("with" param_list)?
+eval_cmd   : "Evaluate" IDENT "on" IDENT
+
+param_list : param ("," param)*
+param      : IDENT "=" expr
+
+// ——————————————————————————————
+//  Printing
+// ——————————————————————————————
+print_stmt : "Print" expr
+
+// ——————————————————————————————
+//  Pipelines (indent-sensitive)
+// ——————————————————————————————
+pipeline_stmt: "Pipeline" IDENT ":" _NL _INDENT statement+ _DEDENT
+
+// ——————————————————————————————
+//  Expressions & Calls
+// ——————————————————————————————
+?expr: IDENT
+     | STRING
+     | NUMBER
+     | IDENT "(" arg_list? ")"
+
+arg_list : arg ("," arg)*
+
+arg: IDENT "=" expr | expr
