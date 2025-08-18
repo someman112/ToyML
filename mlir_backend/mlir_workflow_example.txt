@@ -1,0 +1,80 @@
+# ToyML to MLIR Workflow Example
+
+This file demonstrates how a simple ToyML program flows through the compiler pipeline.
+
+## 1. ToyML Source Code
+
+```
+Dataset mnist from "mnist.csv"
+
+Pipeline Preprocess:
+    Split mnist into train, test with ratio=0.8
+
+Train train with epochs=10
+Evaluate model on test
+Print summarize(model)
+```
+
+## 2. Parsing to AST
+
+The parser produces this AST:
+
+- DatasetNode(name='mnist', path='mnist.csv')
+- PipelineNode(name='Preprocess', body=[
+    SplitNode(source='mnist', targets=['train', 'test'], params={'ratio': 0.8})
+  ])
+- TrainNode(source='train', params={'epochs': 10})
+- EvaluateNode(model='model', on='test')
+- PrintNode(expr={'call': 'summarize', 'args': ['model']})
+
+## 3. MLIR Generation
+
+The MLIR generator produces this MLIR code:
+
+```mlir
+module {
+  func.func @main() {
+    %0 = toyml.dataset "mnist" : "mnist.csv" : !toyml.dataset
+    toyml.pipeline "Preprocess" {
+      %1:2 = toyml.split %0 into ["train", "test"] with {ratio = 0.8} : !toyml.dataset -> (!toyml.dataset, !toyml.dataset)
+      toyml.pipeline_end
+    }
+    %2 = toyml.train %1#0 with {epochs = 10} : !toyml.dataset -> !toyml.model
+    %3 = toyml.evaluate %2 on %1#1 : !toyml.model, !toyml.dataset -> f32
+    %4 = call @summarize(%2) : (!toyml.model) -> !toyml.summary
+    toyml.print %4 : !toyml.summary
+    return
+  }
+}
+```
+
+## 4. MLIR Lowering (Future)
+
+The MLIR lowering passes will transform ToyML dialect operations into standard dialects:
+
+```mlir
+module {
+  func.func @main() {
+    // Load dataset - converted to file I/O and tensor loading
+    %file = io.open_file "mnist.csv" : !io.file
+    %csv = io.read_csv %file : !io.file -> tensor<?x?>
+    
+    // Split dataset - converted to tensor operations
+    %c0 = arith.constant 0 : index
+    %dim = tensor.dim %csv, %c0 : tensor<?x?>
+    %split_point = arith.mulf %dim, 0.8 : f32
+    %train, %test = tensor.split %csv at %split_point : tensor<?x?> -> (tensor<?x?>, tensor<?x?>)
+    
+    // Train model - converted to ML library calls
+    %model = ml.train %train {epochs = 10} : tensor<?x?> -> !ml.model
+    
+    // Evaluate model - converted to ML evaluation
+    %result = ml.evaluate %model, %test : !ml.model, tensor<?x?> -> f32
+    
+    // Print results - converted to standard printing
+    %summary = call @summarize(%model) : (!ml.model) -> !ml.summary
+    call @print(%summary) : (!ml.summary) -> ()
+    return
+  }
+}
+```

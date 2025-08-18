@@ -1,3 +1,5 @@
+from transformer import ASTBuilder
+
 from lark import Lark
 from lark.indenter import Indenter
 
@@ -10,14 +12,21 @@ class DSLOutOfTheBoxIndenter(Indenter):
     tab_len        = 4
 
 
+import os
+
+# Get the absolute path to the lexer_parser directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+grammar_path = os.path.join(parent_dir, "lexer_parser", "dsl.lark")
+
 parser = Lark.open(
-    "dsl.lark",
+    grammar_path,
     parser="lalr",
     postlex=DSLOutOfTheBoxIndenter(),
     start="start",
 )
 
-text = '''\
+dsl_source = '''\
 Dataset raw from "data.csv"
 Load "data.csv" as backup
 
@@ -26,10 +35,11 @@ Pipeline Prep:
     Load "test.csv" as t2
 
 Train train with epochs=10
+Train train using linear_regression with epochs=5, lr=0.01
 Evaluate model on test
 Print summarize(model)
 '''
 
-tree = parser.parse(text)
-print(tree.pretty())
-
+tree = parser.parse(dsl_source)
+ast = ASTBuilder().transform(tree)
+print(ast)

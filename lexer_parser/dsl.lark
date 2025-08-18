@@ -17,7 +17,7 @@ _NL : /(\r?\n[ \t]*)+/
 // ——————————————————————————————
 //  Top-level
 // ——————————————————————————————
-start: statement* _NL*
+start: (_NL* statement)+ _NL*
 
 // ——————————————————————————————
 //  Statements (each ends in exactly one _NL)
@@ -50,7 +50,7 @@ dataset_stmt: "Dataset" IDENT "from" STRING
 
 load_cmd   : "Load" STRING ("as" IDENT)?
 split_cmd  : "Split" IDENT "into" IDENT ("," IDENT)* ("with" param_list)?
-train_cmd  : "Train" IDENT ("with" param_list)?
+train_cmd  : "Train" IDENT ("using" IDENT)? ("with" param_list)?
 eval_cmd   : "Evaluate" IDENT "on" IDENT
 
 param_list : param ("," param)*
