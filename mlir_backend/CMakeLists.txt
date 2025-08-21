@@ -24,7 +24,7 @@ include(AddMLIR)
 
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR}/mlir_backend/include)
-include_directories(${PROJECT_BINARY_DIR}/mlir_backend/include)
+include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR}/include)
 
-add_subdirectory(mlir_backend/lib)
+add_subdirectory(lib)

@@ -7,7 +7,7 @@
 #ifndef TOYML_OPS
 #define TOYML_OPS
 
-include "ToyMLDialect.td"
+include "ToyML/ToyMLDialect.td"
 include "mlir/Interfaces/SideEffectInterfaces.td"
 
 //===----------------------------------------------------------------------===//

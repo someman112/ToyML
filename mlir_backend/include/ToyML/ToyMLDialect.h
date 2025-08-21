@@ -12,27 +12,20 @@
 #include "mlir/IR/OpDefinition.h"
 #include "mlir/Interfaces/SideEffectInterfaces.h"
 
-// Include the generated dialect declarations
-#include "ToyML/ToyMLDialect.h.inc"
-
 namespace mlir {
 namespace toyml {
 
-class ToyMLDialect : public Dialect {
-public:
-  explicit ToyMLDialect(MLIRContext *context);
-  
-  static StringRef getDialectNamespace() { return "toyml"; }
-  
-  // Override the dialect hooks
-  void initialize();
-};
+// Forward declare the generated dialect declaration
+class ToyMLDialect;
 
 } // namespace toyml
 } // namespace mlir
 
+// Include the generated dialect declarations
+#include "../../build/lib/ToyML/ToyMLDialect.h.inc"
+
 // Include the generated operation declarations
 #define GET_OP_CLASSES
-#include "ToyML/ToyMLOps.h.inc"
+#include "../../build/lib/ToyML/ToyMLOps.h.inc"
 
 #endif // TOYML_DIALECT_H
