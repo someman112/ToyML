@@ -1,0 +1,18 @@
+# ToyML Sample with Model Types
+
+# Define datasets
+Dataset mnist from "mnist.csv"
+Dataset cifar from "cifar10.csv"
+
+# Data preparation
+Pipeline DataPrep:
+    Split mnist into train_mnist, test_mnist with ratio=0.8
+    Split cifar into train_cifar, test_cifar with ratio=0.7, shuffle=true
+
+# Training with different model types
+Train train_mnist using cnn with epochs=20, lr=0.001, batch_size=64
+Train train_cifar using transformer with epochs=30, lr=0.0005
+
+# Evaluate models
+Evaluate model on test_mnist
+Print accuracy(model)

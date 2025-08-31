@@ -1,0 +1,8 @@
+Dataset raw from "data.csv"
+
+Pipeline Prep:
+    Split raw into train, test with ratio=0.8
+
+Train train with epochs=10
+Evaluate model on test
+Print model

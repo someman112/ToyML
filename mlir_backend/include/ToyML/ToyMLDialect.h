@@ -11,12 +11,22 @@
 #include "mlir/IR/Dialect.h"
 #include "mlir/IR/OpDefinition.h"
 #include "mlir/Interfaces/SideEffectInterfaces.h"
+#include "ToyML/ToyMLTypes.h"
 
 namespace mlir {
 namespace toyml {
 
 // Forward declare the generated dialect declaration
-class ToyMLDialect;
+class ToyMLDialect : public mlir::Dialect {
+public:
+  explicit ToyMLDialect(mlir::MLIRContext *context);
+  
+  void initialize();
+  
+  // Parse and print methods for custom dialect attributes
+  mlir::Attribute parseAttribute(mlir::DialectAsmParser &parser, mlir::Type type) const override;
+  void printAttribute(mlir::Attribute attr, mlir::DialectAsmPrinter &printer) const override;
+};
 
 } // namespace toyml
 } // namespace mlir

@@ -1,0 +1,74 @@
+┌───────────────┐
+│  ToyML Code   │ # User writes ToyML DSL code
+│               │ # (e.g., Dataset, Train, Split operations)
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│  Lexer/Parser │ # Lark-based parser 
+│               │ # Converts text to parse tree
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│ AST Builder   │ # ASTBuilder transformer
+│ (transformer) │ # Converts parse tree to typed AST
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│  MLIR         │ # MLIR Generator
+│  Generator    │ # Converts ToyML AST to ToyML dialect MLIR
+└───────┬───────┘
+        │
+        ▼
+┌───────────────┐
+│ ToyML Dialect │ # MLIR dialect with DSL operations
+│ MLIR          │ # High-level representation of ML workflow
+└───────┬───────┘
+        │
+        ▼
+┌───────────────────────────────────────────────────┐
+│                 MLIR Lowering Pipeline            │
+│                                                   │
+│  ┌───────────────┐        ┌───────────────┐       │
+│  │ ToyML to      │        │ Tensor/Linalg │       │
+│  │ Tensor/Linalg ├───────►│ to Loops      │       │
+│  └───────────────┘        └───────┬───────┘       │
+│                                   │               │
+│                                   ▼               │
+│                           ┌───────────────┐       │
+│                           │ Loops to      │       │
+│                           │ LLVM Dialect  │       │
+│                           └───────┬───────┘       │
+└───────────────────────────────────┼───────────────┘
+                                    │
+                                    ▼
+                          ┌─────────────────┐
+                          │ LLVM IR         │ # Standard LLVM IR
+                          │                 │
+                          └────────┬────────┘
+                                   │
+                                   ▼
+                          ┌─────────────────┐
+                          │ LLVM            │ # LLVM optimization passes
+                          │ Optimizations   │ # (inlining, loop fusion, etc.)
+                          └────────┬────────┘
+                                   │
+                                   ▼
+                          ┌─────────────────┐
+                          │ Machine Code    │ # Native machine code for target architecture
+                          │ Generation      │ # (x86, ARM, etc.)
+                          └────────┬────────┘
+                                   │
+                                   ▼
+                          ┌─────────────────┐
+                          │ Executable      │ # Final compiled program
+                          │ or JIT Code     │ # (or JIT-compiled function)
+                          └────────┬────────┘
+                                   │
+                                   ▼
+                          ┌─────────────────┐
+                          │  Execution on   │ # Program runs on CPU/GPU/Accelerator
+                          │  Target Hardware│
+                          └─────────────────┘

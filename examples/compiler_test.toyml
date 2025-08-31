@@ -1,0 +1,18 @@
+// Simple test for the ToyML compiler
+// This file is in the ToyML DSL syntax
+
+// Load a dataset
+data = load("data/iris.csv")
+
+// Split the dataset
+train, test = split(data, {ratio: 0.8})
+
+// Train a model
+model = train(train, "logistic_regression", {epochs: 100, learning_rate: 0.01})
+
+// Evaluate the model
+accuracy = evaluate(model, test)
+
+// Print results
+print(accuracy)
+print(model)

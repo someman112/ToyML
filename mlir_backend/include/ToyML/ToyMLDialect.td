@@ -24,6 +24,13 @@ def ToyML_Dialect : Dialect {
   let cppNamespace = "::mlir::toyml";
   
   let useDefaultAttributePrinterParser = 1;
+  
+  // Add custom type parsing and printing
+  let extraClassDeclaration = [{
+    // Type parsing and printing methods for ToyML dialect types
+    Type parseType(DialectAsmParser &parser) const override;
+    void printType(Type type, DialectAsmPrinter &printer) const override;
+  }];
 }
 
 // Base class for all ToyML operations

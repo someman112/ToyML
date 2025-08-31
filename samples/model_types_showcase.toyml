@@ -1,0 +1,16 @@
+# ToyML Model Type Examples
+
+# Simple dataset
+Dataset data from "data.csv"
+Split data into train, test with ratio=0.8
+
+# Train with different model types
+Train train with epochs=5
+Train train using linear_regression with lr=0.01
+Train train using svm with kernel="rbf", C=1.0
+Train train using random_forest with n_estimators=100, max_depth=10
+Train train using neural_network with hidden_layers="64,32", activation="relu"
+
+# Evaluate and print
+Evaluate model on test
+Print metrics(model)
